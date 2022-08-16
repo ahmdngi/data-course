@@ -1,0 +1,5 @@
+Go to http://enos.itcollege.ee/~japoia/algorithms/aa_lab1.html to read the task. Do not change any of the method signatures or class name.
+
+
+Esitage ülesande http://enos.itcollege.ee/~japoia/algorithms/aa_lab1.html programm klassina Answer, jälgige täpselt etteantud signatuure.
+
