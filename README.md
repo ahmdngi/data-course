@@ -2,14 +2,14 @@
 
 This repository is read-only, make a private fork in the bitbucket server
 for your own files. Clone this forked repository to your local computer and 
-solve the task.
+solve the task. 
 Task description:
-http://enos.itcollege.ee/~japoia/algorithms/aa_lab1.html
+https://enos.itcollege.ee/~japoia/algorithms/aa_lab1.html
 
 See on esimese praktikumi failide hoidla, mida saab kasutada ainult algseks 
 lugemiseks. Töötamiseks looge endale isiklik repositoorium, näiteks 
 privaatne 'fork' bitbucket serverisse, millest saate luua klooni oma arvutisse.
-Ülesande teksti leiate http://enos.itcollege.ee/~japoia/algoritmid/aa_lab1.html
+Ülesande teksti leiate https://enos.itcollege.ee/~japoia/algoritmid/aa_lab1.html
 
 ## Command line examples. Näidete kasutamine käsurealt ##
 #### Compilation. Kompileerimine: ####
