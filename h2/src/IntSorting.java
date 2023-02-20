@@ -109,19 +109,37 @@ public class IntSorting {
     */
    public static void binaryInsertionSort(int[] a) {
       // TODO!!! Your method here!
-//https://www.geeksforgeeks.org/binary-insertion-sort/
+      if (a.length < 2)
+         return;
+      for (int i = 1; i < a.length; i++) {
+         int val = a[i];
+         int start_subarray = 0;
+         int end_subarray = i - 1;
+         int pos = i;
+         while (start_subarray <= end_subarray) {
+            int mid_subarray = (start_subarray + end_subarray) / 2;
+            if (a[mid_subarray] > val) {
+               pos = mid_subarray;
+               end_subarray = mid_subarray - 1;
+            } else start_subarray = mid_subarray + 1;
+         }
+         System.arraycopy(a, pos, a, pos + 1, i - pos);
+         a[pos] = val;
+      }
+   }
 
+//https://www.geeksforgeeks.org/binary-insertion-sort/
+/*
       for (int i = 1; i < a.length; i++)
       {
          int x = a[i];
-
          // Find location to insert
          // using binary search
          int j = Math.abs(Arrays.binarySearch(a, 0, i, x) + 1);
          // Shifting array to one
          // location right
          System.arraycopy(a, j, a, j + 1, i - j);
-         
+
          // Placing element at its
          // correct location
          a[j] = x;

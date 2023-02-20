@@ -29,7 +29,7 @@ public class LongStack {
    public void op (String s) {
       // TODO!!!
    }
-  
+
    public long tos() {
       return 0; // TODO!!! Your code here!
    }
