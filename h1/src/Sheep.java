@@ -28,12 +28,22 @@ public class Sheep {
        //int sheeps = 0 ;
        int goats = 0 ;
        for (int i = 0; i < animals.length ; i++) {
-
+// counter for the number of goats in the array
            if (animals[i] == Animal.goat) {
                goats++;
            }
        }
-
+//using less iterators
+       int iterator = 0;
+       while ( iterator < goats) {
+           animals[iterator] = (Animal.goat);
+           iterator++;
+            }
+       while (iterator < animals.length) {
+           animals[iterator] =  (Animal.sheep);
+           iterator++;
+       }
+/*
        for (int i = 0; i < goats ; i++) {
            animals[i] = (Animal.goat);
        }
