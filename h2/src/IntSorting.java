@@ -56,6 +56,14 @@ public class IntSorting {
 
          acopy = Arrays.copyOf(origArray, rightLimit);
          stime = System.nanoTime();
+         binaryInsertionSort2(acopy);
+         ftime = System.nanoTime();
+         diff = ftime - stime;
+         System.out.printf("%34s%11d%n", "Binary insertion sort using Array.BinarySearch: time (ms): ", diff / 1000000);
+         checkOrder(acopy);
+
+         acopy = Arrays.copyOf(origArray, rightLimit);
+         stime = System.nanoTime();
          quickSort(acopy, 0, acopy.length);
          ftime = System.nanoTime();
          diff = ftime - stime;
@@ -109,6 +117,7 @@ public class IntSorting {
     */
    public static void binaryInsertionSort(int[] a) {
       // TODO!!! Your method here!
+
       if (a.length < 2)
          return;
       for (int i = 1; i < a.length; i++) {
@@ -127,6 +136,25 @@ public class IntSorting {
          a[pos] = val;
       }
    }
+   public static void binaryInsertionSort2(int[] a) {
+   //https://www.geeksforgeeks.org/binary-insertion-sort/
+
+      for (int i = 1; i < a.length; i++)
+      {
+         int x = a[i];
+         // Find location to insert
+         // using binary search
+         int j = Math.abs(Arrays.binarySearch(a, 0, i, x) + 1);
+         // Shifting array to one
+         // location right
+         System.arraycopy(a, j, a, j + 1, i - j);
+
+         // Placing element at its
+         // correct location
+         a[j] = x;
+      }
+   }
+///https://www.geeksforgeeks.org/binary-insertion-sort/
 
 
    /**
