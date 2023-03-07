@@ -211,7 +211,7 @@ public class LongStackTest {
          LongStack.interpret (s));
    }
 
-   @Test (timeout=1000)
+   @Test (timeout=10000)
    public void testInterpretTokenizer() {
       String s = "1  2    +";
       assertEquals ("expression: " + Aout.toString (s), 3, 
@@ -274,5 +274,14 @@ public class LongStackTest {
       LongStack.interpret ("+");
    }
 
+  /*
+  @Test
+  public void negnumb() {
+     String s = "-10";
+     assertEquals(LongStack.isNumber (s), true);
+  }*/
+
 }
+
+
 

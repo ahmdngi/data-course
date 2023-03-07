@@ -128,25 +128,6 @@ public class IntSorting {
       }
    }
 
-//https://www.geeksforgeeks.org/binary-insertion-sort/
-/*
-      for (int i = 1; i < a.length; i++)
-      {
-         int x = a[i];
-         // Find location to insert
-         // using binary search
-         int j = Math.abs(Arrays.binarySearch(a, 0, i, x) + 1);
-         // Shifting array to one
-         // location right
-         System.arraycopy(a, j, a, j + 1, i - j);
-
-         // Placing element at its
-         // correct location
-         a[j] = x;
-      }
-   }
-///https://www.geeksforgeeks.org/binary-insertion-sort/
-
 
    /**
     * Sort a part of the array using quicksort method.
