@@ -138,7 +138,6 @@ public class IntSorting {
    }
    public static void binaryInsertionSort2(int[] a) {
    //https://www.geeksforgeeks.org/binary-insertion-sort/
-
       for (int i = 1; i < a.length; i++)
       {
          int x = a[i];
