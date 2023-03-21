@@ -211,7 +211,7 @@ public class LongStackTest {
          LongStack.interpret (s));
    }
 
-   @Test (timeout=10000)
+   @Test (timeout=1000)
    public void testInterpretTokenizer() {
       String s = "1  2    +";
       assertEquals ("expression: " + Aout.toString (s), 3, 
@@ -273,6 +273,38 @@ public class LongStackTest {
    public void testTooFewNumbers3() {
       LongStack.interpret ("+");
    }
+
+
+
+
+   @Test (timeout=1000)
+   public void testInterpretSwap() {
+      String s = "2 5 SWAP -";
+      assertEquals ("expression: " + Aout.toString (s), 3,
+              LongStack.interpret (s));
+   }
+
+   @Test (timeout=1000)
+   public void testInterpretDup() {
+      String s = "3 DUP *";
+      assertEquals ("expression: " + Aout.toString (s), 9,
+              LongStack.interpret (s));
+   }
+
+   @Test (timeout=1000)
+   public void testInterpretRot() {
+      String s = "2 5 9 ROT - +";
+      assertEquals ("expression: " + Aout.toString (s),12 ,
+              LongStack.interpret (s));
+   }
+
+   @Test (timeout=100000000)
+   public void testInterpretNewCases() {
+      String s = "-3 -5 -7 ROT - SWAP DUP * +";
+      assertEquals ("expression: " + Aout.toString (s),21 ,
+              LongStack.interpret (s));
+   }
+
 
   /*
   @Test

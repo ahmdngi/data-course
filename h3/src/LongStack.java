@@ -1,5 +1,4 @@
 //import java.util.Arrays;
-
 //https://www.geeksforgeeks.org/stack-class-in-java/
 //https://stevepesce879.medium.com/what-is-a-stack-and-how-to-create-one-in-java-e2c0f2852eb7
 //https://www.youtube.com/watch?v=fptlqsesjxY&t=48s
@@ -38,13 +37,6 @@ public class LongStack {
          current = current.next;
          clonedCurrent = clonedNode;
       }
-
-      /*
-      Node current=this.top;
-      Node newTop;
-      newTop = new Node(current.data);
-      clonedstack.top = newTop;
-      */
       return clonedStack;
 
 
@@ -71,13 +63,12 @@ public class LongStack {
          throw new RuntimeException("Stack Underflow");
       }
       long data = top.data;
-      top = top.next;
+         top = top.next;
       size --;
       return data;
    }
    public void op (String s) {
       if (this.size() < 2) {
-         //System.out.println("Not enough numbers to perform operation under flow "+ s );
          throw new RuntimeException("Stack Underflow" + s);
       }
       long b = pop();
@@ -95,7 +86,6 @@ public class LongStack {
             break;
          case "/":
             if (b == 0) {
-               //System.out.println("Division by zero" + s);
                throw new RuntimeException("Division by zero" + s);
             }
             result = a / b;
@@ -143,7 +133,6 @@ public class LongStack {
       StringBuilder a = new StringBuilder();
       Node current = top;
       while (current != null) {
-         //sb.append(current.data).append(" ");
          a.insert(0, current.data + " ");
          current = current.next;
       }
@@ -153,31 +142,133 @@ public class LongStack {
    public static long interpret (String pol) {
       LongStack stack = new LongStack();
       String[] tokens = pol.split(" ");
-      //String[] tokens = pol.trim().split("\\s+");
       for (String token : tokens) {
-         //token = token.trim();
          try {
             if (isNull(token)) {
                throw new RuntimeException("Empty Token " + pol);
             } else if (isWhite(token)) {
-               //System.out.println("White Space Token " + pol);
                throw new RuntimeException("White Space Token " + pol);
             } else if (token.contains("\t")) {
                token = token.replace("\t", "");
                stack.push(Long.parseLong(token));
-               //System.out.println("Token Contains Tab " + Arrays.toString(tokens));
                throw new RuntimeException("Token Contains Tab " + pol);
             } else if (isIllegal(token)) {
-               //token = token.replace("[a-zA-Z]+", "");
-               //System.out.println("an illegal symbol " + pol);
                stack.pop();
                throw new RuntimeException("an illegal symbol " + pol);
             }
          } catch (RuntimeException e) {
-            //System.err.println("Error: " + e.getMessage());
             continue;
          }
-         /*
+         if (isNumber(token)) {
+            stack.push(Long.parseLong(token));
+         }
+         else if (isOperator(token)) {
+            if (stack.size() < 1) {
+              throw new RuntimeException("Not enough numbers to perform operation " + pol);
+            }
+            switch (token) {
+               case "+": {
+                  long op2 = stack.pop();
+                  long op1 = stack.pop();
+                  stack.push(op1 + op2);
+                  break;
+               }
+               case "-": {
+                  long op2 = stack.pop();
+                  long op1 = stack.pop();
+                  stack.push(op1 - op2);
+                  break;
+               }
+               case "*": {
+                  long op2 = stack.pop();
+                  long op1 = stack.pop();
+                  stack.push(op1 * op2);
+                  break;
+               }
+               case "/": {
+                  long op2 = stack.pop();
+                  long op1 = stack.pop();
+                  if (op2 == 0) {
+                     throw new RuntimeException("Division by zero" + pol);
+                  }
+                  stack.push(op1 / op2);
+                  break;
+               }
+               case "SWAP": {
+                  if (stack.size() < 2) {
+                     throw new RuntimeException("Not enough elements to perform SWAP operation " + pol);
+                  }
+                  long op2 = stack.pop();
+                  long op1 = stack.pop();
+                  stack.push(op2);
+                  stack.push(op1);
+                  break;
+               }
+               case "ROT": {
+                  if (stack.size() < 3) {
+                     throw new RuntimeException("Not enough elements to perform ROT operation " + pol);
+                  }
+                  long top = stack.pop();
+                  long mid = stack.pop();
+                  long bot = stack.pop();
+                  stack.push(mid);
+                  stack.push(top);
+                  stack.push(bot);
+                  break;
+               }
+               case "DUP": {
+                  if (stack.size() < 1) {
+                     throw new RuntimeException("Not enough elements to perform DUP operation " + pol);
+                  }
+                  long op = stack.pop();
+                  stack.push(op);
+                  stack.push(op);
+                  break;
+               }
+               default:
+                  throw new RuntimeException("Invalid operator: " + pol);
+            }
+         }
+         else {
+            throw new RuntimeException("Invalid token: " + pol);
+         }
+      }
+      if (stack.stEmpty() ) {
+         throw new RuntimeException("Not enough numbers"  + pol);
+
+      }
+      long result = stack.pop();
+      if (!stack.stEmpty()){
+         throw new RuntimeException("Too many Numbers " + pol);
+
+      }
+      return result;
+   }
+   private static boolean isNumber(String s) {
+      return s.matches("-?\\d+");
+   }
+   private static boolean isWhite(String s) {
+      return s.matches("\\s+");
+   }
+
+   private static boolean isNull(String s) {
+      return s.matches("^$");
+   }
+   private static boolean isOperator(String s) {
+      return s.equals("+") || s.equals("-") || s.equals("*") || s.equals("/") || s.equals("SWAP") || s.equals("ROT") || s.equals("DUP") ;
+
+   }
+   private static boolean isIllegal(String s) {
+      return s.matches("[a-zA-Z]+") && !s.equals("SWAP") && !s.equals("ROT") && !s.equals("DUP");
+   }
+
+}
+
+//System.out.println("Token Contains Tab " + Arrays.toString(tokens));
+//token = token.replace("[a-zA-Z]+", "");
+//System.out.println("an illegal symbol " + pol);
+//System.out.println("Too many Numbers " + pol);
+/*
          catch (RuntimeException e) {
             // handle the error and continue processing
             System.err.println("Error: " + e.getMessage());
@@ -197,79 +288,19 @@ public class LongStack {
             throw new RuntimeException("White Space" + token);
          }
          */
-         if (isNumber(token)) {
-            stack.push(Long.parseLong(token));
-         }
-         else if (isOperator(token)) {
-            if (stack.size() < 2) {
-               //System.out.println("Not enough numbers to perform operation " + pol);
-               throw new RuntimeException("Not enough numbers to perform operation " + pol);
-            }
-            long op2 = stack.pop();
-            long op1 = stack.pop();
-            switch (token) {
-               case "+":
-                  stack.push(op1 + op2);
-                  break;
-               case "-":
-                  stack.push(op1 - op2);
-                  break;
-               case "*":
-                  stack.push(op1 * op2);
-                  break;
-               case "/":
-                  if (op2 == 0) {
-                     throw new RuntimeException("Division by zero" + pol);
-                  }
-                  stack.push(op1 / op2);
-                  break;
-               default:
-                  throw new RuntimeException("Invalid operator: " + pol);
-            }
-         }
-         else {
-            throw new RuntimeException("Invalid token: " + pol);
-         }
-      }
-      if (stack.stEmpty() ) {
-         //System.out.println("Not enough numbers"  + Arrays.toString(tokens));
-         throw new RuntimeException("Not enough numbers"  + pol);
-
-      }
-      /*
-      if (stack.size() != 1) {
-         throw new RuntimeException("Too many operands");
-      }
-      */
-      long result = stack.pop();
-
-      if (!stack.stEmpty()){
-         //System.out.println("Too many Numbers " + pol);
-         throw new RuntimeException("Too many Numbers " + pol);
-
-      }
-      return result;
-   }
-   private static boolean isNumber(String s) {
-      return s.matches("-?\\d+");
-   }
-   private static boolean isWhite(String s) {
-      return s.matches("\\s+");
-   }
 /*
    private static boolean isTab(String s) {
       return s.matches("\\t+");
    }
 */
-   private static boolean isNull(String s) {
-      return s.matches("^$");
-   }
-   private static boolean isOperator(String s) {
-      return s.equals("+") || s.equals("-") || s.equals("*") || s.equals("/");
-
-   }
-   private static boolean isIllegal(String s) {
-      return s.matches("[a-zA-Z]+");
-   }
-
-}
+      /*
+      if (stack.size() != 1) {
+         throw new RuntimeException("Too many operands");
+      }
+      */
+      /*
+      Node current=this.top;
+      Node newTop;
+      newTop = new Node(current.data);
+      clonedstack.top = newTop;
+      */
