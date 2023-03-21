@@ -273,7 +273,6 @@ public class LongStackTest {
    public void testTooFewNumbers3() {
       LongStack.interpret ("+");
    }
-
 }
 
 
