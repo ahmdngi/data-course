@@ -19,7 +19,6 @@ public class Quaternion {
     * @param d imaginary part k
     */
    public Quaternion (double a, double b, double c, double d) {
-      // TODO!!! Your constructor here!
          this.a = a;
          this.b = b;
          this.c = c;
@@ -30,7 +29,6 @@ public class Quaternion {
     * @return real part
     */
    public double getRpart() {
-      //return 0.; // TODO!!!
       return a;
    }
 
@@ -38,7 +36,6 @@ public class Quaternion {
     * @return imaginary part i
     */
    public double getIpart() {
-      //return 0.; // TODO!!!
       return b;
    }
 
@@ -46,7 +43,6 @@ public class Quaternion {
     * @return imaginary part j
     */
    public double getJpart() {
-      //return 0.; // TODO!!!
       return c;
    }
 
@@ -54,7 +50,6 @@ public class Quaternion {
     * @return imaginary part k
     */
    public double getKpart() {
-      //return 0.; // TODO!!!
       return d;
    }
 
@@ -65,22 +60,8 @@ public class Quaternion {
     */
    @Override
    public String toString() {
-      //return ""; // TODO!!!
-      StringBuilder sb = new StringBuilder();
-      sb.append(a);
-      if (b >= 0) {
-         sb.append("+");
-      }
-      sb.append(b).append("i");
-      if (c >= 0) {
-         sb.append("+");
-      }
-      sb.append(c).append("j");
-      if (d >= 0) {
-         sb.append("+");
-      }
-      sb.append(d).append("k");
-      return sb.toString();
+      return this.a + "+" + this.b + "i+" + this.c + "j+" + this.d + "k";
+
    }
 
    /** Conversion from the string to the quaternion. 
@@ -90,21 +71,36 @@ public class Quaternion {
     * @param s string of form produced by the <code>toString</code> method
     * @return a quaternion represented by string s
     */
-   public static Quaternion valueOf (String s) {
-      //return null; // TODO!!!
+   public static Quaternion valueOf(String s) {
       try {
          int start = 0;
          int end = s.indexOf('+', 1);
+         if (end < 0) {
+            end = s.indexOf('-', 1);
+         }
          double a = Double.parseDouble(s.substring(start, end));
+
          start = end;
          end = s.indexOf('i', start + 1);
+         if (s.charAt(start) == '-') {
+            end = s.indexOf('i', start + 2);
+         }
          double b = Double.parseDouble(s.substring(start + 1, end));
-         start = end;
+
+         start = end + 1;
          end = s.indexOf('j', start + 1);
+         if (s.charAt(start) == '-') {
+            end = s.indexOf('j', start + 2);
+         }
          double c = Double.parseDouble(s.substring(start + 1, end));
-         start = end;
+
+         start = end + 1;
          end = s.indexOf('k', start + 1);
+         if (s.charAt(start) == '-') {
+            end = s.indexOf('k', start + 2);
+         }
          double d = Double.parseDouble(s.substring(start + 1, end));
+
          return new Quaternion(a, b, c, d);
       } catch (Exception e) {
          throw new IllegalArgumentException("Invalid quaternion string: " + s);
@@ -116,7 +112,6 @@ public class Quaternion {
     */
    @Override
    public Object clone() throws CloneNotSupportedException {
-      //return null; // TODO!!!
       return new Quaternion(a, b, c, d);
    }
 
@@ -124,10 +119,7 @@ public class Quaternion {
     * @return true, if the real part and all the imaginary parts are (close to) zero
     */
    public boolean isZero() {
-      //return false; // TODO!!!
       return Math.abs(a) < THRESHOLD && Math.abs(b) < THRESHOLD && Math.abs(c) < THRESHOLD && Math.abs(d) < THRESHOLD;
-      //return a == 0 && b == 0 && c == 0 && d == 0;
-
    }
 
    /** Conjugate of the quaternion. Expressed by the formula 
@@ -135,7 +127,6 @@ public class Quaternion {
     * @return conjugate of <code>this</code>
     */
    public Quaternion conjugate() {
-      //return null; // TODO!!!
       return new Quaternion(a, -b, -c, -d);
    }
 
@@ -144,7 +135,6 @@ public class Quaternion {
     * @return quaternion <code>-this</code>
     */
    public Quaternion opposite() {
-      //return null; // TODO!!!
       return new Quaternion(-a, -b, -c, -d);
    }
 
@@ -154,7 +144,6 @@ public class Quaternion {
     * @return quaternion <code>this+q</code>
     */
    public Quaternion plus (Quaternion q) {
-      //return null; // TODO!!!
       return new Quaternion(a + q.a, b + q.b, c + q.c, d + q.d);
    }
 
@@ -165,7 +154,6 @@ public class Quaternion {
     * @return quaternion <code>this*q</code>
     */
    public Quaternion times (Quaternion q) {
-      //return null; // TODO!!!
       double aa = a * q.a - b * q.b - c * q.c - d * q.d;
       double bb = a * q.b + b * q.a + c * q.d - d * q.c;
       double cc = a * q.c - b * q.d + c * q.a + d * q.b;
@@ -178,7 +166,6 @@ public class Quaternion {
     * @return quaternion <code>this*r</code>
     */
    public Quaternion times (double r) {
-      //return null; // TODO!!!
       return new Quaternion(a * r, b * r, c * r, d * r);
    }
 
@@ -188,10 +175,8 @@ public class Quaternion {
     * @return quaternion <code>1/this</code>
     */
    public Quaternion inverse() {
-      //return null; // TODO!!!
-      //double normSquared = a * a + b * b + c * c;
       double normSquared = a * a + b * b + c * c + d * d;
-      if (isZero() || normSquared == 0) {
+      if (isZero()) {
          throw new ArithmeticException("Quaternion is zero or has zero norm");
       }
       double inverseNormSquared = 1.0 / normSquared;
@@ -204,7 +189,6 @@ public class Quaternion {
     * @return quaternion <code>this-q</code>
     */
    public Quaternion minus (Quaternion q) {
-      //return null; // TODO!!!
       return new Quaternion(a - q.a, b - q.b, c - q.c, d - q.d);
    }
 
@@ -213,11 +197,10 @@ public class Quaternion {
     * @return quaternion <code>this*inverse(q)</code>
     */
    public Quaternion divideByRight (Quaternion q) {
-      //return null; // TODO!!!
       if (q.isZero()) {
          throw new ArithmeticException("Division by zero");
       }
-      return this.times(q.conjugate()).times(q.inverse());
+      return this.times(q.inverse());
    }
 
    /** Left quotient of quaternions.
@@ -225,11 +208,11 @@ public class Quaternion {
     * @return quaternion <code>inverse(q)*this</code>
     */
    public Quaternion divideByLeft (Quaternion q) {
-      //return null; // TODO!!!
       if (q.isZero()) {
          throw new ArithmeticException("Division by zero");
       }
-      return q.conjugate().times(this).times(q.inverse());
+      Quaternion inv = q.inverse();
+      return inv.times(this);
    }
    
    /** Equality test of quaternions. Difference of equal numbers
@@ -239,7 +222,6 @@ public class Quaternion {
     */
    @Override
    public boolean equals (Object qo) {
-      //return false; // TODO!!!
       if (this == qo) return true;
       if (!(qo instanceof Quaternion)) return false;
       Quaternion that = (Quaternion) qo;
@@ -251,13 +233,11 @@ public class Quaternion {
     * @return dot product of this and q
     */
    public Quaternion dotMult (Quaternion q) {
-      //return null; // TODO!!!
-      double real = a * q.a + b * q.b + c * q.c + d * q.d;
-      double bi = b * q.a + a * q.b + d * q.c - c * q.d;
-      double cj = c * q.a - d * q.b + a * q.c + b * q.d;
-      double dk = d * q.a + c * q.b - b * q.c + a * q.d;
-      return new Quaternion(real, bi, cj, dk);
-      //return a * q.a + b * q.b + c * q.c + d * q.d;
+      Quaternion p = this;
+      Quaternion first = p.times(q.conjugate());
+      Quaternion second = q.times(p.conjugate());
+      return (first.plus(second)).times(0.5);
+
    }
 
    /** Integer hashCode has to be the same for equal objects.
@@ -265,7 +245,6 @@ public class Quaternion {
     */
    @Override
    public int hashCode() {
-      //return 0; // TODO!!!
       return Objects.hash(a, b, c, d);
    }
 
@@ -274,7 +253,6 @@ public class Quaternion {
     * @return norm of <code>this</code> (norm is a real number)
     */
    public double norm() {
-      //return 0.; // TODO!!!
       return Math.sqrt(a * a + b * b + c * c + d * d);
    }
 

@@ -7,6 +7,7 @@
 //https://github.com/TheAlgorithms/Java/blob/master/src/main/java/com/thealgorithms/datastructures/stacks/NodeStack.java
 public class LongStack {
    public static void main (String[] arg) {
+      System.out.println(interpret("3 "));
    }
    private static class Node {
       long data;

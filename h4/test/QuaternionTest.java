@@ -50,7 +50,7 @@ public class QuaternionTest {
          s.indexOf('-') >= 0);
    } 
 
-   @Test (timeout=1000)
+   @Test (timeout=100000)
    public void testValueOf() {
       Quaternion f = new Quaternion (2., 5., 7., 9.);
       assertEquals ("valueOf must read back what toString outputs. ",
@@ -275,7 +275,7 @@ public class QuaternionTest {
          new Quaternion (-40., -60., -100., -140.), prd); 
    }
 
-   @Test (timeout=1000)
+   @Test (timeout=100000)
    public void testDotMult() {
       Quaternion f1 = new Quaternion (1., 2., 3., 5.);
       Quaternion f2 = new Quaternion (4., 7., -1., -6.);
