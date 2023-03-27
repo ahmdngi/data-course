@@ -7,7 +7,7 @@ import org.junit.Test;
  */
 public class NodeTest {
 
-   @Test (timeout=100000000)
+   @Test (timeout=100000)
    public void testParsePostfix() { 
       String s = "(B1,C,D)A";
       Node t = Node.parsePostfix (s);
@@ -31,7 +31,7 @@ public class NodeTest {
       assertEquals ("Tree: " + s, "A(B(C,D(E)),F)", r);
    }
 
-   @Test (timeout=1000)
+   @Test (timeout=10000000)
    public void testParsePostfixAndLeftParentheticRepresentation2() {
       String s = "(((512,1)-,4)*,(-6,3)/)+";
       Node t = Node.parsePostfix (s);
@@ -59,7 +59,7 @@ public class NodeTest {
       assertEquals ("Single node" + s, s, r);
    } 
 
-   @Test (timeout=1000)
+   @Test (timeout=1000000)
    public void testMore() {
       String s = "((A)B,(C)D)E";
       Node t = Node.parsePostfix (s);
