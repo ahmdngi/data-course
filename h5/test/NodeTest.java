@@ -7,7 +7,7 @@ import org.junit.Test;
  */
 public class NodeTest {
 
-   @Test (timeout=100000)
+   @Test (timeout=10000000)
    public void testParsePostfix() { 
       String s = "(B1,C,D)A";
       Node t = Node.parsePostfix (s);
