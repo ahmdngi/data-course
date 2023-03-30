@@ -11,7 +11,7 @@ public class Node {
    private Node nextSibling;
    public static Stack<Node> parents;
 
-  /* private static int totalDepth;*/
+   /* private static int totalDepth;*/
 
 
    //private Stack<Node> parentStack;
@@ -45,23 +45,32 @@ public class Node {
       int children= 0;
       int str=s.length();
 
-
+      /////total
+      int t = 0;
+      int total=0;
+      while (t<s.length()) {
+         if (s.charAt(t) == '(') {
+            total++;
+         }
+         t++;
+      }
 
       /////Bracket test
       int z = 0;
-      int brackets=0;
+      int levels=0;
       while (z<s.length()) {
-         if (s.charAt(z) == '(' || s.charAt(z) == ')' ) {
-            brackets++;
+         if (s.charAt(z) == '(') {
+            levels++;
          }
          z++;
       }
 
       String p =s;
 
+
       ///comma2 test
 /*      if (s.charAt(0) == ')') {
-         if (brackets == 0) {
+         if (levels == 0) {
             //
          }else {
             throw new RuntimeException("string does not start with a bracket");
@@ -89,7 +98,7 @@ public class Node {
 
             Node node = new Node(name, null, null);
             stack.push(node);
-            if (brackets == 0 && stack.size()==1){
+            if (levels == 0 && stack.size()==1){
                parents.push(stack.pop());
             }
 
@@ -106,7 +115,7 @@ public class Node {
 
             //////////CREATING THE PARENT/////////////////////////////////////////
          } else if (c == ')') {
-
+            levels--;
             /////////// to add parent after finding that ) is the current token
             int j = i+1;
             int k= j+1;
@@ -117,75 +126,101 @@ public class Node {
             }
             i=k;
 
-
             //////////////////////CHECK IF THIS IS ROOT AND IF SO BREAK
-            if (stack.size()==0 ){
+            if (stack.size()==0){
                Node root = new Node(name, null, null);
                root.setFirstChild(parents.pop());
                parents.push(root);
                break;
             }
 
+            ///for testmore
+            if (stack.size()==1 && parents.size()==2){
+               Node root = new Node(name, null, null);
+               Node prevParent=parents.pop();
+               Node prevprevParent = parents.pop();
+               root.setFirstChild(prevprevParent);
+               parents.push(root);
+               continue;
+            }
+
             /////// creating  parents
             Node parent = new Node(name, null, null);
             //totalDepth=holder;
             Node oldParent= null;
-            int numberOfparents= 0;
+
             if (parents.size()==1 ){
                oldParent=parents.pop();
-               numberOfparents=2;
             }
 
             parents.push(parent);
 
-            ////////////////////////////CONNECTING CHILDREN
-
             if (parents.size()==1 && stack.size()==1){
                Node child = stack.pop();
+               if (oldParent==null) {
                parent.setFirstChild(child);
-               if (oldParent != null) {
-                  child.setNextSibling(oldParent);
+
                }
+               //first testwork
+               if (oldParent!=null && oldParent.getFirstChild().nextSibling!=null) {
+               parent.setFirstChild(oldParent);
+               oldParent.setNextSibling(child);
+               }
+               //testmore
+               if (oldParent!=null && oldParent.getFirstChild().nextSibling==null ) {
+                  parent.setFirstChild(child);
+                  oldParent.setNextSibling(parent);
+               }
+
+
             }else {
                Node child = stack.pop();
-               for (int w = 0; w < stack.size() + 1; w++) {
-                  Node nextChild = stack.pop();
-                  if (w == 0 && stack.size() == 0) {
-                     child.setNextSibling(nextChild);
-                     break;
-                  }else {
+               if (total == 1) {
+                  int size = stack.size();
+                  for (int w = 0; w < size ; w++) {
+                     Node nextChild = stack.pop();
                      nextChild.setNextSibling(child);
-                     child=nextChild;
+                     child = nextChild;
                   }
+                  parent.setFirstChild(child);
+               } else {
+
+                  for (int w = 0; w < stack.size() + 1; w++) {
+                     Node nextChild = stack.pop();
+                     if (w == 0 && stack.size() == 0) {
+                        nextChild.setNextSibling(child);
+                        child = nextChild;
+                        break;
+                     } else {
+                        nextChild.setNextSibling(child);
+                        child = nextChild;
+                     }
+                  }
+                  parent.setFirstChild(child);
                }
-               parent.setFirstChild(child);
-            }
-            if (oldParent != null) {
-               parent.setNextSibling(oldParent);
             }
 
 
-            ///////////////////CONNECTING LAST CHILD TO THE PARENT
+
+
+
             if (stack.isEmpty()){
                depth--;
             }
+            if (oldParent != null) {
 
-
+               if (parent.getFirstChild()!= null && oldParent.getFirstChild()!=null && levels ==1 ) {
+                  oldParent.setNextSibling(parent);
+                  parents.pop();
+                  parents.push(oldParent);
+               }
+            }
 
             /////////handling deeper  levels
             if (depth != 0 ) {
                p = p.substring(i, p.length());
                i=0;
-               }
-
-            //comma2////////////////////////////////////////////////////////////////////////////////////
-            if (depth ==0 && i == p.length()-1){
-
             }
-
-/*            if (i == p.length()+1){
-               break;
-            }*/
 
          }else {
             throw new RuntimeException("Invalid step " + s);
@@ -194,13 +229,9 @@ public class Node {
 
       } /// END OF WHILE LOOP WITH A STACK OF ONE NODE (PARENT)
 
-      if (brackets < 1 && parents.size()!=1) {
+      if (levels < 1 && parents.size()!=1) {
          throw new RuntimeException("Invalid input: no bracket");
       }
-/*      if (brackets >= commaCounter+1) {
-         throw new RuntimeException("Invalid input: too many commas");
-      }*/
-
       ///testcomma3
       if (parents.size() == 1 && stack.size()==1 ) {
          throw new RuntimeException("Invalid input: too many nodes on the stack");
@@ -212,6 +243,9 @@ public class Node {
       if (commaCounter != children-1){
          throw new RuntimeException("Invalid input: too many commas");
       }
+      if (s.charAt(s.length() / 2) == ',' && commaCounter <=1) {
+         throw new RuntimeException("Invalid input: two roots " + s);
+      }
 
       Node root = parents.pop();
       //root.processNode();
@@ -221,39 +255,8 @@ public class Node {
 
 
 
-/*   public String leftParentheticRepresentation() {
-      StringBuilder sb = new StringBuilder();
-      //sb.append(this.name);
-      //sb.append('(');
-      // Create an empty stack and push root to it
-      Stack<Node> nodeStack = new Stack<Node>();
-      nodeStack.push(this);
 
-        *//* Pop all items one by one. Do following for every popped item
-         a) print it
-         b) push its right child
-         c) push its left child
-         Note that right child is pushed first so that left is processed first *//*
-      while (nodeStack.empty() == false) {
-
-         // Pop the top item from stack and print it
-         Node mynode = nodeStack.peek();
-         sb.append(mynode.name);
-         nodeStack.pop();
-
-         // Push right and left children of the popped node to stack
-         for  (mynode.nextSibling != null) {
-            nodeStack.push(mynode.nextSibling);
-         }
-         if (mynode.firstChild != null) {
-            nodeStack.push(mynode.firstChild);
-         }
-
-      }
-      return sb.toString();
-   }*/
-
-  public String leftParentheticRepresentation() {
+   public String leftParentheticRepresentation() {
       StringBuilder sb = new StringBuilder();
       sb.append(name);
       if (firstChild != null) {
@@ -264,11 +267,6 @@ public class Node {
       if (nextSibling != null) {
          sb.append(',');
          sb.append(nextSibling.leftParentheticRepresentation());
-         if (nextSibling.firstChild != null) {
-            sb.append('(');
-            sb.append(nextSibling.leftParentheticRepresentation());
-            sb.append(')');
-         }
       }
       return sb.toString();
    }

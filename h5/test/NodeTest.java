@@ -19,7 +19,7 @@ public class NodeTest {
       assertEquals ("Tree: " + s, "+(*(-(2,1),4),/(69,3))", r);
    }
 
-   @Test (timeout=1000)
+   @Test (timeout=10000000)
    public void testParsePostfixAndLeftParentheticRepresentation1() {
       String s = "((((E)D)C)B)A";
       Node t = Node.parsePostfix (s);

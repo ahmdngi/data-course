@@ -96,12 +96,12 @@ public class QuaternionTest {
       assertFalse ("clone must not be identical to original", k3 == k4);
       assertTrue ("zero must satisfy isZero", 
          new Quaternion (0., 0., 0., 0.).isZero());
-      assertTrue ("number created from parts must be equal to original", 
-         k2.equals (new Quaternion (k2.getRpart(), 
+      assertTrue ("number created from parts must be equal to original",
+         k2.equals (new Quaternion (k2.getRpart(),
             k2.getIpart(), k2.getJpart(), k2.getKpart())));
       Quaternion k5 = new Quaternion (3.000000000000001, 7.000000000000001, 
          5., 2.);
-      assertTrue ("cannot compare real numbers using == operator", 
+      assertTrue ("cannot compare real numbers using == operator",
          k5.equals (k1));
    }
 
@@ -136,7 +136,7 @@ public class QuaternionTest {
       f1 = new Quaternion (0., 0., 0., 0.);
       try {
          f2 = (Quaternion)f1.clone();
-      } catch (CloneNotSupportedException e) {};   
+      } catch (CloneNotSupportedException e) {};
       assertNotSame ("clone must differ from original", f2, f1);
       assertEquals ("clone must be equal to original", f1, f2);
    }
@@ -480,8 +480,8 @@ public class QuaternionTest {
       int h5 = q5.hashCode();
       assertFalse ("hashCode does not depend on real part", h1 == h2);
       assertFalse ("hashCode does not depend on imaginary part i", h1 == h3);
-      assertFalse ("hashCode does not depend on imaginary part j", h1 == h4); 
-      assertFalse ("hashCode does not depend on imaginary part k", h1 == h5); 
+      assertFalse ("hashCode does not depend on imaginary part j", h1 == h4);
+      assertFalse ("hashCode does not depend on imaginary part k", h1 == h5);
    }
 
    @Test (timeout=1000)
@@ -490,7 +490,7 @@ public class QuaternionTest {
       int h1 = q1.hashCode();
       Quaternion q2 = new Quaternion (1., 2., 4., 3.);
       int h2 = q2.hashCode();
-      assertFalse ("hashCode must not be symmetrical: " 
+      assertFalse ("hashCode must not be symmetrical: "
          + q1 + " and " + q2 + " both give " + h1,
          h1 == h2);
       q2 = new Quaternion (1., 3., 2., 4.);
@@ -604,6 +604,27 @@ public class QuaternionTest {
          + q1 + " and " + q2 + " both give " + h1,
          h1 == h2);
    }
+   @Test (timeout=100000)
+   public void testPower() {
+      // test pow(0)
+      Quaternion q = new Quaternion(1, 2, 3, 4);
+      assertTrue(new Quaternion(1, 0, 0, 0).equals(q.pow(0)));
 
+      // test pow(1)
+      assertTrue(q.equals(q.pow(1)));
+
+      // test pow(-1)
+      assertTrue(q.inverse().equals(q.pow(-1)));
+
+      // test pow(n) for n > 1
+      assertTrue(q.times(q.pow(1)).equals(q.pow(2)));
+      assertTrue(q.times(q.pow(2)).equals(q.pow(3)));
+      assertTrue(q.times(q.pow(3)).equals(q.pow(4)));
+
+      // test pow(-n) for n > 1
+      assertTrue(q.pow(2).inverse().equals(q.pow(-2)));
+      assertTrue(q.pow(3).inverse().equals(q.pow(-3)));
+      assertTrue(q.pow(4).inverse().equals(q.pow(-4)));
+   }
 }
 

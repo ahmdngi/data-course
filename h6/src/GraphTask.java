@@ -9,7 +9,7 @@ public class GraphTask {
    public static void main (String[] args) {
       GraphTask a = new GraphTask();
       a.run();
-      throw new RuntimeException ("Nothing implemented yet!"); // delete this
+      //throw new RuntimeException ("Nothing implemented yet!"); // delete this
    }
 
    /** Actual main method to run examples and everything. */
@@ -225,6 +225,63 @@ public class GraphTask {
             connected [j][i] = 1;
             edgeCount--;  // a new edge happily created
          }
+      }
+/////////////////////////////////////////////
+         public int countVertices() {
+            int count = 0;
+            Vertex current = first;
+            while (current != null) {
+               count++;
+               current = current.next;
+               }
+            System.out.println (count);
+            return count;
+            }
+      /**
+       * Find the eccentricity of a given vertex in the graph.
+       * The eccentricity of a vertex is the maximum distance between it and any other vertex in the graph.
+       * @param v the vertex to find the eccentricity of
+       * @return the eccentricity of the given vertex
+       */
+      public int eccentricity(Vertex v) {
+         int[] distances = distancesFrom(v);
+         int maxDistance = 0;
+         for (int i = 0; i < distances.length; i++) {
+            if (distances[i] > maxDistance) {
+               maxDistance = distances[i];
+            }
+         }
+         return maxDistance;
+      }
+
+      /**
+       * Compute the distances from a given vertex to all other vertices in the graph.
+       * @param v the source vertex
+       * @return an array containing the distances from the source vertex to all other vertices
+       */
+      private int[] distancesFrom(Vertex v) {
+         int[] distances = new int[countVertices()];
+         for (int i = 0; i < distances.length; i++) {
+            distances[i] = Integer.MAX_VALUE;
+         }
+         distances[v.info] = 0;
+
+         Queue<Vertex> queue = new LinkedList<>();
+         queue.add(v);
+
+         while (!queue.isEmpty()) {
+            Vertex current = queue.remove();
+            Arc a = current.first;
+            while (a != null) {
+               if (distances[a.target.info] == Integer.MAX_VALUE) {
+                  distances[a.target.info] = distances[current.info] + 1;
+                  queue.add(a.target);
+               }
+               a = a.next;
+            }
+         }
+
+         return distances;
       }
 
       // TODO!!! Your Graph methods here! Probably your solution belongs here.
