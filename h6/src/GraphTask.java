@@ -1,5 +1,8 @@
 import java.util.*;
 
+
+
+//https://www.geeksforgeeks.org/graph-measurements-length-distance-diameter-eccentricity-radius-center/
 /** Container class to different classes, that makes the whole
  * set of classes one class formally.
  */
@@ -7,21 +10,53 @@ public class GraphTask {
 
    /** Main method. */
    public static void main (String[] args) {
-      GraphTask a = new GraphTask();
-      a.run();
-      //throw new RuntimeException ("Nothing implemented yet!"); // delete this
+      GraphTask g = new GraphTask();
+      g.run("v5");
    }
-
-   /** Actual main method to run examples and everything. */
-   public void run() {
-      Graph g = new Graph ("G");
-      g.createRandomSimpleGraph (6, 9);
+   public void run(String vertexId) {
+      Graph g = new Graph("G");
+      g.createRandomSimpleGraph(6, 9);
       System.out.println (g);
 
-      // TODO!!! Your experiments here
+      // Find the vertex with the given vertexId
+      Vertex vertexToFind = null;
+      Vertex currentVertex = g.first;
+      while (currentVertex != null) {
+         if (currentVertex.id.equals(vertexId)) {
+            vertexToFind = currentVertex;
+            break;
+         }
+         currentVertex = currentVertex.next;
+      }
+
+      if (vertexToFind == null) {
+         System.out.println("Vertex with ID " + vertexId + " not found.");
+         return;
+      }
+
+      // Calculate the eccentricity of the specified vertex
+      int vertexEccentricity = g.eccentricity(vertexToFind);
+
+      System.out.println("Eccentricity of vertex " + vertexId + ": " + vertexEccentricity);
    }
 
-   // TODO!!! add javadoc relevant to your problem
+//   public void run() {
+//      Graph g = new Graph ("G");
+//      g.createRandomSimpleGraph (22,21);
+//      System.out.println (g);
+//      Vertex v = g.first;
+//
+//      int graphEccentricity = g.findEccentricity();
+//
+//      System.out.println("Eccentricity of the graph: " + graphEccentricity);
+//
+//      int vertexEccentricity = g.eccentricity(v);
+//
+//      System.out.println("Eccentricity of the given vertex " + vertexEccentricity);
+//
+//   }
+
+
    class Vertex {
 
       private String id;
@@ -45,7 +80,6 @@ public class GraphTask {
          return id;
       }
 
-      // TODO!!! Your Vertex methods here!
    }
 
 
@@ -75,8 +109,7 @@ public class GraphTask {
          return id;
       }
 
-      // TODO!!! Your Arc methods here!
-   } 
+   }
 
 
    class Graph {
@@ -126,6 +159,7 @@ public class GraphTask {
          Vertex res = new Vertex (vid);
          res.next = first;
          first = res;
+         eccentricity(res);
          return res;
       }
 
@@ -226,7 +260,9 @@ public class GraphTask {
             edgeCount--;  // a new edge happily created
          }
       }
-/////////////////////////////////////////////
+      /////////////////////////////////////////////
+      //https://github.com/CarterZhou/algorithms_practice/blob/master/algorithms4th/graph/undirected/GraphProperties.java
+      //https://github.com/junglie85/sedgewick_algorithms/blob/master/src/main/java/uk/ashleybye/sedgewick/graph/Eccentricity.java
          public int countVertices() {
             int count = 0;
             Vertex current = first;
@@ -234,19 +270,23 @@ public class GraphTask {
                count++;
                current = current.next;
                }
-            System.out.println (count);
+            //System.out.println (count);
             return count;
             }
       /**
        * Find the eccentricity of a given vertex in the graph.
        * The eccentricity of a vertex is the maximum distance between it and any other vertex in the graph.
+       * Returns -1 if the graph is not connected.
        * @param v the vertex to find the eccentricity of
-       * @return the eccentricity of the given vertex
+       * @return the eccentricity of the given vertex or -1 if the graph is not connected
        */
       public int eccentricity(Vertex v) {
          int[] distances = distancesFrom(v);
          int maxDistance = 0;
          for (int i = 0; i < distances.length; i++) {
+            if (distances[i] == Integer.MAX_VALUE) {
+               return -1; // The graph is not connected
+            }
             if (distances[i] > maxDistance) {
                maxDistance = distances[i];
             }
@@ -280,11 +320,26 @@ public class GraphTask {
                a = a.next;
             }
          }
-
          return distances;
       }
+      /**
+       * Calculate the eccentricity of the graph.
+       * The eccentricity of a graph is the maximum eccentricity of its vertices.
+       * @return the eccentricity of the graph
+       */
+      public int findEccentricity() {
+         int maxEccentricity = 0;
+         Vertex current = first;
+         while (current != null) {
+            int currentEccentricity = eccentricity(current);
+            if (currentEccentricity > maxEccentricity) {
+               maxEccentricity = currentEccentricity;
+            }
+            current = current.next;
+         }
+         return maxEccentricity;
+      }
 
-      // TODO!!! Your Graph methods here! Probably your solution belongs here.
    }
 
 } 
