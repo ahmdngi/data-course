@@ -604,7 +604,41 @@ public class QuaternionTest {
          + q1 + " and " + q2 + " both give " + h1,
          h1 == h2);
    }
+   @Test (timeout=100000)
+   public void testPower() {
 
+//      Quaternion f1 = new Quaternion (0.25, 0.25, -0.75, 0.5);
+//      Quaternion f2 = new Quaternion (1., -2., -1., 2.);
+//      Quaternion qt = f1.divideByLeft (f2);
+//      assertEquals ("Wrong quotient from divideByLeft: <" + f1 + "> / <" + f2 + ">", new Quaternion (0.15, -0.025, -0.2, -0.175), qt);
+      //
+
+      Quaternion q = new Quaternion(1, 2, 3, 4);
+
+      // test pow(0)
+      Quaternion qpowerzero= q.pow(0);
+      assertEquals("Wrong Result for quaternion power 0: Expected <(1, 0, 0, 0)>  <" + qpowerzero + ">",new Quaternion(1, 0, 0, 0), qpowerzero);
+
+      // test pow(1)
+      Quaternion qpowerone= q.pow(1);
+      assertEquals("Wrong Result for quaternion power 1: Expected <(1, 2, 3, 4)>  <" + qpowerone + ">",new Quaternion(1, 2, 3, 4), qpowerone);
+
+      // test pow(-1)
+      Quaternion qinverse= q.pow(-1);
+      assertEquals ("Wrong Result for quaternion power -1: Expected <(-0.03, -0.07, -0.1, 0.13)>  Actual <" + qinverse + ">", new Quaternion (0.033, -0.067, -0.1, -0.133), qinverse);
+
+      // test pow(n) for n > 1
+      Quaternion qpowertwo= q.pow(2);
+      assertEquals ("Wrong Result for quaternion power 2: Expected <(-28 ,4 ,6 ,8)>  <" + qpowertwo + ">", new Quaternion (-28 ,4 ,6 ,8), qpowertwo);
+      Quaternion qpowerthree= q.pow(3);
+      assertEquals ("Wrong Result for quaternion power 3: Expected <( -86 ,-52 ,-78 ,-104)>  <" + qpowerthree + ">", new Quaternion ( -86 ,-52 ,-78 ,-104), qpowerthree);
+
+
+      // test pow(-n) for n > 1
+      Quaternion qpowerminustwo= q.pow(-2);
+      assertEquals ("Wrong Result for quaternion power -2: Expected <>  <" + qpowerminustwo + ">", new Quaternion (-0.031 ,-0.004,-0.007,-0.009), qpowerminustwo);
+
+   }
 
 }
 

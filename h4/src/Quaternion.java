@@ -239,6 +239,33 @@ public class Quaternion {
       return (first.plus(second)).times(0.5);
 
    }
+   public Quaternion pow(int n) {
+      if (n == 0) {
+         return new Quaternion(1, 0, 0, 0);
+      } else if (n == 1) {
+         try {
+            return (Quaternion) this.clone();
+         } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+         }
+      } else if (n == -1) {
+         return this.inverse().roundTo(3);
+      } else if (n > 1) {
+         int w=n-1;
+         return this.times(this.pow(w));
+      } else { // n < -1
+         return this.pow(-n).inverse().roundTo(3);
+      }
+   }
+
+   public Quaternion roundTo(int decimalPlaces) {
+      double factor = Math.pow(10, decimalPlaces);
+      double x = Math.round(this.a * factor) / factor;
+      double y = Math.round(this.b * factor) / factor;
+      double z = Math.round(this.c * factor) / factor;
+      double w = Math.round(this.d * factor) / factor;
+      return new Quaternion(x, y, z, w);
+   }
 
 
    /** Integer hashCode has to be the same for equal objects.
