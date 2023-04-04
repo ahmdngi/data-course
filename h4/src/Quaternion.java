@@ -240,25 +240,6 @@ public class Quaternion {
 
    }
 
-   public Quaternion pow(int n) {
-      if (n == 0) {
-         return new Quaternion(1, 0, 0, 0);
-      } else if (n == 1) {
-         try {
-            return (Quaternion) this.clone();
-         } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
-         }
-      } else if (n == -1) {
-         return this.inverse();
-      } else if (n > 1) {
-         int w=n-1;
-         return this.times(this.pow(w));
-      } else { // n < -1
-         return this.pow(-n).inverse();
-      }
-   }
-
 
    /** Integer hashCode has to be the same for equal objects.
     * @return hashcode

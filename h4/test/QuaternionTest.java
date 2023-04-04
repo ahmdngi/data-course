@@ -604,27 +604,7 @@ public class QuaternionTest {
          + q1 + " and " + q2 + " both give " + h1,
          h1 == h2);
    }
-   @Test (timeout=100000)
-   public void testPower() {
-      // test pow(0)
-      Quaternion q = new Quaternion(1, 2, 3, 4);
-      assertTrue(new Quaternion(1, 0, 0, 0).equals(q.pow(0)));
+   //test
 
-      // test pow(1)
-      assertTrue(q.equals(q.pow(1)));
-
-      // test pow(-1)
-      assertTrue(q.inverse().equals(q.pow(-1)));
-
-      // test pow(n) for n > 1
-      assertTrue(q.times(q.pow(1)).equals(q.pow(2)));
-      assertTrue(q.times(q.pow(2)).equals(q.pow(3)));
-      assertTrue(q.times(q.pow(3)).equals(q.pow(4)));
-
-      // test pow(-n) for n > 1
-      assertTrue(q.pow(2).inverse().equals(q.pow(-2)));
-      assertTrue(q.pow(3).inverse().equals(q.pow(-3)));
-      assertTrue(q.pow(4).inverse().equals(q.pow(-4)));
-   }
 }
 
