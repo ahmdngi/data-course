@@ -604,7 +604,7 @@ public class QuaternionTest {
          + q1 + " and " + q2 + " both give " + h1,
          h1 == h2);
    }
-   //test
+
 
 }
 
