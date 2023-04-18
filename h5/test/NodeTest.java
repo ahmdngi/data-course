@@ -141,6 +141,52 @@ public class NodeTest {
    public void test20() {
       Node root = Node.parsePostfix ("((A)B,(C)D)");
    }
+   ////////////////
+   @Test(timeout = 1000)
+   public void testTwoChildrenToXML() {
+      String s = "(B1,C)A";
+      Node t = Node.parsePostfix(s);
+      String r = t.toXML();
+      r=r.replaceAll("[\\s]","");
+      assertEquals("Tree: " + s, "<L1>A<L2>B1</L2><L2>C</L2></L1>", r);}
+
+   @Test(timeout = 1000)
+   public void testThreeChildrenToXML() {   String s = "(B1,C,D)A";
+      Node t = Node.parsePostfix(s);
+      String r = t.toXML();
+      r=r.replaceAll("[\\s]","");
+      assertEquals("Tree: " + s, "<L1>A<L2>B1</L2><L2>C</L2><L2>D</L2></L1>", r);}
+
+
+   @Test(timeout = 1000)
+   public void testSingleChildToXML() {   String s = "(((D)C)B)A";
+      Node t = Node.parsePostfix(s);
+      String r = t.toXML();
+      r=r.replaceAll("[\\s]","");
+      assertEquals("Tree: " + s, "<L1>A<L2>B<L3>C<L4>D</L4></L3></L2></L1>", r);}
+   @Test(timeout = 1000)
+   public void testComplexToXML() {   String s = "((C)B,(E,F)D,G)A";
+      Node t = Node.parsePostfix(s);
+      String r = t.toXML();
+      r=r.replaceAll("[\\s]","");
+      assertEquals("Tree: " + s, "<L1>A<L2>B<L3>C</L3></L2><L2>D<L3>E</L3><L3>F</L3></L2><L2>G</L2></L1>", r);
+   }
+   @Test(timeout = 1000)
+   public void testComplex2ToXML() {
+      String s = "((C,(E)D)B,F)A";
+      Node t = Node.parsePostfix(s);
+      String r = t.toXML();
+      r=r.replaceAll("[\\s]","");
+      assertEquals("Tree: " + s, "<L1>A<L2>B<L3>C</L3><L3>D<L4>E</L4></L3></L2><L2>F</L2></L1>", r);
+   }
+
+   //   @Test(timeout = 1000)
+//   public void testThreeChildrenToXML() {   String s = "(B1,C,D)A";
+//      Node t = Node.parsePostfix(s);   String r = t.toXML();
+//      assertEquals("Tree: " + s, "<L1> A\n" +           "    <L2> B1 </L2>\n" +
+//              "    <L2> C </L2>\n" +           "    <L2> D </L2>\n" +
+//              "</L1>", r);}
+
 
 }
 
