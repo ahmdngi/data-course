@@ -6,7 +6,7 @@ public class Node {
    private Node firstChild;
    private Node nextSibling;
 
-   Node (String n, Node d, Node r) {
+   Node(String n, Node d, Node r) {
       this.name = n;
       this.firstChild = d;
       this.nextSibling = r;
@@ -14,31 +14,31 @@ public class Node {
 
    //https://leetcode.com/problems/serialize-and-deserialize-binary-tree/solutions/3051250/easy-to-understand-java-c-python-solution-short-faster-easy-solutions/
    //https://www.geeksforgeeks.org/construct-a-binary-tree-from-string-with-bracket-representation-set-2/?ref=rp
-   public static Node parsePostfix (String s) {
+   public static Node parsePostfix(String s) {
       Node root = new Node(null, null, null);
       Stack<Node> stack = new Stack();
       String[] arr = s.split("");
       List<String> str = new ArrayList<String>(Arrays.asList(arr));
 
       // two roots present
-      if (str.get(str.size()-2).equals(",")) {
-         throw new RuntimeException("two roots available " + s );
+      if (str.get(str.size() - 2).equals(",")) {
+         throw new RuntimeException("two roots available " + s);
       }
       //no root
-      if ( str.get(str.size()-1).equals(")") ) {
+      if (str.get(str.size() - 1).equals(")")) {
          throw new RuntimeException("no root available " + s);
       }
       //connection between children
       if (s.matches(".*[a-zA-Z]+\\(.*")) {
-         throw new RuntimeException("No proper connection between children " + s );
+         throw new RuntimeException("No proper connection between children " + s);
       }
       //illegal characters
-      if(s.contains(" ") || s.contains(",,") || s.contains("\t")  ) {
-         throw new RuntimeException("invalid input " + s );
+      if (s.contains(" ") || s.contains(",,") || s.contains("\t")) {
+         throw new RuntimeException("invalid input " + s);
       }
       // illegal brackets
-      if(s.contains("))")|| s.contains("()") || s.contains("),") || s.contains(")(")) {
-         throw new RuntimeException("two closing brackets " + s );
+      if (s.contains("))") || s.contains("()") || s.contains("),") || s.contains(")(")) {
+         throw new RuntimeException("two closing brackets " + s);
       }
 
       for (int i = 0; i < str.size(); i++) {
@@ -48,15 +48,15 @@ public class Node {
             root.firstChild = new Node(null, null, null);
             root = root.firstChild;
             //if there is no nodes after the opening bracket
-            if (str.get(i+1).equals(",")) {
-               throw new RuntimeException("no first child to connect to" + s );
+            if (str.get(i + 1).equals(",")) {
+               throw new RuntimeException("no first child to connect to" + s);
             }
          } else if (str.get(i).equals(")")) {
             //creating parents or root
             root = stack.pop();
          } else if (str.get(i).equals(",")) {
             if (stack.isEmpty()) {
-               throw new RuntimeException("not enough nodes to connect " + s );
+               throw new RuntimeException("not enough nodes to connect " + s);
             }
             root.nextSibling = new Node(null, null, null);
             root = root.nextSibling;
@@ -88,70 +88,14 @@ public class Node {
       return sb.toString();
    }
 
-   public String toXML() {
-      String nova = toXMLHelper(1, "");
-      return nova.trim();
+   public static void main(String[] param) {
+      String s = "(B1,C)A";
+      Node t = Node.parsePostfix(s);
+      String v = t.leftParentheticRepresentation();
+      System.out.println(s + " ==> " + v); // (B1,C)A ==> A(B1,C)
    }
 
-   private String toXMLHelper(int depth, String indent) {
-      StringBuilder sb = new StringBuilder();
-
-      // Add opening tag with depth and  name
-      sb.append(indent).append("<L").append(depth).append("> ").append(name);
-
-      // Process the first child with an increased depth and an additional indentation
-      if (firstChild != null) {
-         sb.append("\n").append(firstChild.toXMLHelper(depth + 1, indent + "    "));
-         sb.append(indent);
-      } else {
-         sb.append(" ");
-      }
-
-      // Add closing tag with depth
-      sb.append("</L").append(depth).append(">\n");
-
-      // Process the next sibling with the same depth and indentation
-      if (nextSibling != null) {
-         sb.append(nextSibling.toXMLHelper(depth, indent));
-      }
-
-      return sb.toString();
-   }
-
-
-   public static void main (String[] param) {
-      //example1
-      String s1 = "(B1,C)A";
-      Node t1 = Node.parsePostfix (s1);
-      String v1 = t1.leftParentheticRepresentation();
-      String xml1 =t1.toXML();
-      System.out.println ("case 1:\n" + s1 + " ==> " + v1); // (B1,C)A ==> A(B1,C)
-      System.out.println("\n" + xml1+"\n------");
-      //example2
-      String s2 = "(B1,C,D)A";
-      Node t2 = Node.parsePostfix (s2);
-      String v2 = t2.leftParentheticRepresentation();
-      String xml2=t2.toXML();
-      System.out.println ("case 2:\n" + s2 + " ==> " + v2); // (B1,C,D)A ==> A(B1,C,D)
-      System.out.println("\n" + xml2+"\n------");
-      //example3
-      String s3 = "(((D)C)B)A";
-      Node t3 = Node.parsePostfix (s3);
-      String v3 = t3.leftParentheticRepresentation();
-      String xml3=t3.toXML();
-      System.out.println ("case 3:\n" + s3 + " ==> " + v3); // (((D)C)B)A ==> A(B(C(D)))
-      System.out.println("\n" + xml3+"\n------");
-      //example4
-      String s4 = "((C)B,(E,F)D,G)A";
-      Node t4 = Node.parsePostfix (s4);
-      String v4 = t4.leftParentheticRepresentation();
-      String xml4=t4.toXML();
-      System.out.println ("case 4:\n" + s4 + " ==> " + v4); // ((C)B,(E,F)D,G)A ==> A(B(C),D(E,F),G)
-      System.out.println("\n" + xml4+"\n------");
-   }
 }
-
-
 
 ////https://www.geeksforgeeks.org/construct-binary-tree-string-bracket-representation/?ref=lbp
 //

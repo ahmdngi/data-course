@@ -7,18 +7,30 @@ import java.util.*;
  */
 public class GraphTaskTest {
 
-   //   @Test (timeout=20000)
-//   public void test1() {
-//      GraphTask.main (null);
-//      assertTrue ("There are no tests", true);
-//   }
    @Test
    public void testCreateRandomSimpleGraph() {
       GraphTask.Graph g = new GraphTask().new Graph("G");
       g.createRandomSimpleGraph(5, 7);
+      System.out.println(g.toString());
       assertEquals("The graph should have 5 vertices.", 5, g.countVertices());
    }
 
+   @Test(timeout = 1000)
+   public void largeGraph() {
+      GraphTask graphTask = new GraphTask();
+      GraphTask.Graph graph = graphTask.new Graph("TestGraph");
+      graph.createRandomSimpleGraph(2200,2500);
+      System.out.println(graph.findEccentricity());
+   }
+
+
+   @Test(timeout = 1000)
+   public void largeTree() {
+      GraphTask graphTask = new GraphTask();
+      GraphTask.Graph graph = graphTask.new Graph("TestGraph");
+      graph.createRandomTree(3000);
+      System.out.println(graph.findEccentricity());
+   }
    @Test
    public void testEccentricity() {
       GraphTask gt = new GraphTask();
@@ -36,12 +48,13 @@ public class GraphTaskTest {
       g.createArc("a43", v4, v3);
 
       int[][] adjMatrix = g.createAdjMatrix();
-      for (int i = 0; i < adjMatrix.length; i++) {
-         for (int j = 0; j < adjMatrix[i].length; j++) {
-            System.out.print(adjMatrix[i][j] + " ");
-         }
-         System.out.println();
-      }
+//      for (int i = 0; i < adjMatrix.length; i++) {
+//         for (int j = 0; j < adjMatrix[i].length; j++) {
+//            System.out.print(adjMatrix[i][j] + " ");
+//         }
+//         System.out.println();
+//      }
+      System.out.println(g.toString());
       assertEquals("Eccentricity of v1 should be 3.", 3, g.eccentricity(v1));
       assertEquals("Eccentricity of v2 should be 2.", 2, g.eccentricity(v2));
       assertEquals("Eccentricity of v3 should be 2.", 2, g.eccentricity(v3));
@@ -71,14 +84,14 @@ public class GraphTaskTest {
       graph.createArc("a7", v4, v5);
       graph.createArc("a8", v5, v4);
 
-
       int[][] adjMatrix = graph.createAdjMatrix();
-      for (int i = 0; i < adjMatrix.length; i++) {
-         for (int j = 0; j < adjMatrix[i].length; j++) {
-            System.out.print(adjMatrix[i][j] + " ");
-         }
-         System.out.println();
-      }
+//      for (int i = 0; i < adjMatrix.length; i++) {
+//         for (int j = 0; j < adjMatrix[i].length; j++) {
+//            System.out.print(adjMatrix[i][j] + " ");
+//         }
+//         System.out.println();
+//      }
+      System.out.println(graph.toString());
 
       // Compute eccentricity of each vertex
       int e1 = graph.eccentricity(v1);

@@ -36,7 +36,6 @@ public class GraphTask {
 
       // Calculate the eccentricity of the specified vertex
       int vertexEccentricity = g.eccentricity(vertexToFind);
-
       System.out.println("Eccentricity of vertex " + vertexId + ": " + vertexEccentricity);
    }
 
@@ -159,7 +158,6 @@ public class GraphTask {
          Vertex res = new Vertex (vid);
          res.next = first;
          first = res;
-         eccentricity(res);
          return res;
       }
 

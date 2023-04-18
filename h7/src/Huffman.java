@@ -1,172 +1,137 @@
-import java.io.ByteArrayOutputStream;
 import java.util.*;
 
 public class Huffman {
-   private TreeNode root;
-   private Map<Byte, String> huffmanCodes;
+   private final Node root;
+   private final Map<Byte, String> codeMap;
+   private int bitLength;
 
-   Huffman(byte[] original) {
-      Map<Byte, Integer> frequencyMap = buildFrequencyMap(original);
-      root = buildHuffmanTree(frequencyMap);
-      huffmanCodes = new HashMap<>();
-      generateHuffmanCodes(root, "");
-   }
-
-   private Map<Byte, Integer> buildFrequencyMap(byte[] original) {
-      Map<Byte, Integer> frequencyMap = new HashMap<>();
-      for (byte b : original) {
-         frequencyMap.put(b, frequencyMap.getOrDefault(b, 0) + 1);
-      }
-      return frequencyMap;
-   }
-
-   private TreeNode buildHuffmanTree(Map<Byte, Integer> frequencyMap) {
-      PriorityQueue<TreeNode> queue = new PriorityQueue<>(Comparator.comparingInt(node -> node.frequency));
-
-      for (Map.Entry<Byte, Integer> entry : frequencyMap.entrySet()) {
-         queue.offer(new TreeNode(entry.getKey(), entry.getValue()));
-      }
-
-      while (queue.size() > 1) {
-         TreeNode left = queue.poll();
-         TreeNode right = queue.poll();
-         TreeNode parent = new TreeNode(null, left.frequency + right.frequency);
-         parent.left = left;
-         parent.right = right;
-         queue.offer(parent);
-      }
-
-      return queue.poll();
-   }
-
-   private void generateHuffmanCodes(TreeNode node, String code) {
-      if (node.isLeaf()) {
-         huffmanCodes.put(node.value, code);
-      } else {
-         generateHuffmanCodes(node.left, code + "0");
-         generateHuffmanCodes(node.right, code + "1");
-      }
-   }
-
-   public int bitLength() {
-      int length = 0;
-      for (String code : huffmanCodes.values()) {
-         length += code.length();
-      }
-      return length;
-   }
-
-   public byte[] encode(byte[] original) {
-      StringBuilder sb = new StringBuilder();
-      for (byte b : original) {
-         sb.append(huffmanCodes.get(b));
-      }
-      return sb.toString().getBytes();
-   }
-
-   public byte[] decode(byte[] encodedData) {
-      StringBuilder sb = new StringBuilder(new String(encodedData));
-      ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      TreeNode current = root;
-
-      for (int i = 0; i < sb.length(); i++) {
-         current = sb.charAt(i) == '0' ? current.left : current.right;
-         if (current.isLeaf()) {
-            baos.write(current.value);
-            current = root;
-         }
-      }
-
-      return baos.toByteArray();
-   }
-
-   private static class TreeNode {
+   private static class Node implements Comparable<Node> {
       Byte value;
       int frequency;
-      TreeNode left;
-      TreeNode right;
+      Node left, right;
 
-      TreeNode(Byte value, int frequency) {
+      Node(Byte value, int frequency) {
          this.value = value;
          this.frequency = frequency;
+      }
+
+      Node(Node left, Node right) {
+         this.left = left;
+         this.right = right;
+         this.frequency = left.frequency + right.frequency;
       }
 
       boolean isLeaf() {
          return left == null && right == null;
       }
+
+      @Override
+      public int compareTo(Node other) {
+         return Integer.compare(this.frequency, other.frequency);
+      }
    }
-   public static void main(String[] args) {
-      String tekst = "ABCDEFAAABBC";
+
+   public Huffman(byte[] original) {
+      Map<Byte, Integer> frequencyMap = new HashMap<>();
+      for (byte b : original) {
+         frequencyMap.put(b, frequencyMap.getOrDefault(b, 0) + 1);
+      }
+
+      PriorityQueue<Node> pq = new PriorityQueue<>();
+      for (Map.Entry<Byte, Integer> entry : frequencyMap.entrySet()) {
+         pq.offer(new Node(entry.getKey(), entry.getValue()));
+      }
+
+      while (pq.size() > 1) {
+         Node left = pq.poll();
+         Node right = pq.poll();
+         pq.offer(new Node(left, right));
+      }
+
+      root = pq.poll();
+      codeMap = new HashMap<>();
+      generateCodes(root, new StringBuilder());
+   }
+
+   private void generateCodes(Node node, StringBuilder code) {
+      if (node.isLeaf()) {
+         codeMap.put(node.value, code.toString());
+         bitLength += node.frequency * code.length();
+      } else {
+         generateCodes(node.left, code.append('0'));
+         code.setLength(code.length() - 1);
+         generateCodes(node.right, code.append('1'));
+         code.setLength(code.length() - 1);
+      }
+   }
+
+   public int bitLength() {
+      return bitLength;
+   }
+
+   public byte[] encode(byte[] origData) {
+      StringBuilder encodedBits = new StringBuilder();
+      for (byte b : origData) {
+         encodedBits.append(codeMap.get(b));
+      }
+
+      int encodedSize = (encodedBits.length() + 7) / 8;
+      byte[] encodedData = new byte[encodedSize];
+
+      for (int i = 0; i < encodedBits.length(); i++) {
+         if (encodedBits.charAt(i) == '1') {
+            encodedData[i / 8] |= 1 << (7 - (i % 8));
+         }
+      }
+
+      return encodedData;
+   }
+
+   public byte[] decode(byte[] encodedData) {
+      List<Byte> decodedData = new ArrayList<>();
+      Node currentNode = root;
+
+      for (int i = 0; i < encodedData.length * 8; i++) {
+         int bit = (encodedData[i / 8] >> (7 - (i % 8))) & 1;
+         currentNode = bit == 0 ? currentNode.left : currentNode.right;
+
+         if (currentNode.isLeaf()) {
+            decodedData.add(currentNode.value);
+            currentNode = root;
+         }
+      }
+
+      byte[] result = new byte[decodedData.size()];
+      for (int i = 0; i < result.length; i++) {
+         result[i] = decodedData.get(i);
+      }
+      return result;
+   }
+
+   public static void main(String[] params) {
+      String tekst = "AAAAAAAAAAAAABBBBBBCCCDDEEF";
       byte[] orig = tekst.getBytes();
       Huffman huf = new Huffman(orig);
       byte[] kood = huf.encode(orig);
       byte[] orig2 = huf.decode(kood);
-      System.out.println(Arrays.equals(orig, orig2));
 
-      for (byte b : orig) {
-         //String encoded = huf.encodingMap.get(b);
-         //System.out.println("Symbol " + (char) b + " code: " + b + " frequency " + huf.root.frequency + " and hcodeLength " + encoded.length() + " bits hcode " + encoded);
-      }
+      System.out.println(Arrays.equals(orig, orig2));
+      int lngth = huf.bitLength();
+      System.out.println("Length of encoded data in bits: " + lngth);
+
+      // Additional test for bytearray of length 1
+      String singleCharText = "A";
+      byte[] singleCharOrig = singleCharText.getBytes();
+      Huffman singleCharHuf = new Huffman(singleCharOrig);
+      byte[] singleCharKood = singleCharHuf.encode(singleCharOrig);
+      byte[] singleCharOrig2 = singleCharHuf.decode(singleCharKood);
+
+      System.out.println(Arrays.equals(singleCharOrig, singleCharOrig2));
+      int singleCharLngth = singleCharHuf.bitLength();
+      System.out.println("Length of encoded data in bits for bytearray of length 1: " + singleCharLngth);
+
    }
 }
 
 
 
-
-//https://www.delftstack.com/howto/java/java-huffman-code/
-//import java.util.*;
-//
-///**
-// * Prefix codes and Huffman tree.
-// * Tree depends on source data.
-// */
-//public class Huffman {
-//
-//   // TODO!!! Your instance variables here!
-//
-//   /** Constructor to build the Huffman code for a given bytearray.
-//    * @param original source data
-//    */
-//   Huffman (byte[] original) {
-//      // TODO!!! Your constructor here!
-//   }
-//
-//   /** Length of encoded data in bits.
-//    * @return number of bits
-//    */
-//   public int bitLength() {
-//      return 0; // TODO!!!
-//   }
-//
-//
-//   /** Encoding the byte array using this prefixcode.
-//    * @param origData original data
-//    * @return encoded data
-//    */
-//   public byte[] encode (byte [] origData) {
-//      return null; // TODO!!!
-//   }
-//
-//   /** Decoding the byte array using this prefixcode.
-//    * @param encodedData encoded data
-//    * @return decoded data (hopefully identical to original)
-//    */
-//   public byte[] decode (byte[] encodedData) {
-//      return null; // TODO!!!
-//   }
-//
-//   /** Main method. */
-//   public static void main (String[] params) {
-//      String tekst = "AAAAAAAAAAAAABBBBBBCCCDDEEF";
-//      byte[] orig = tekst.getBytes();
-//      Huffman huf = new Huffman (orig);
-//      byte[] kood = huf.encode (orig);
-//      byte[] orig2 = huf.decode (kood);
-//      // must be equal: orig, orig2
-//      System.out.println (Arrays.equals (orig, orig2));
-//      int lngth = huf.bitLength();
-//      System.out.println ("Length of encoded data in bits: " + lngth);
-//      // TODO!!! Your tests here!
-//   }
-//}
-//

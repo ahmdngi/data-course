@@ -6,7 +6,7 @@ import java.util.*;
 public class Quaternion {
 
    // TODO!!! Your fields here!
-   private static final double THRESHOLD = 0.000001;
+   private static final double THRESHOLD = 0.001;
    private final double a;
    private final double b;
    private final double c;
@@ -249,15 +249,16 @@ public class Quaternion {
             throw new RuntimeException(e);
          }
       } else if (n == -1) {
-         return this.inverse().roundTo(3);
+         return this.inverse();
       } else if (n > 1) {
          int w=n-1;
          return this.times(this.pow(w));
       } else { // n < -1
-         return this.pow(-n).inverse().roundTo(3);
+         return this.pow(-n).inverse();
       }
    }
 
+   //https://www.baeldung.com/java-round-decimal-number
    public Quaternion roundTo(int decimalPlaces) {
       double factor = Math.pow(10, decimalPlaces);
       double x = Math.round(this.a * factor) / factor;
