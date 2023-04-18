@@ -41,7 +41,6 @@ public class Node {
          throw new RuntimeException("two closing brackets " + s );
       }
 
-
       for (int i = 0; i < str.size(); i++) {
          if (str.get(i).equals("(")) {
             //creating new children
@@ -89,11 +88,66 @@ public class Node {
       return sb.toString();
    }
 
+   public String toXML() {
+      String nova = toXMLHelper(1, "");
+      return nova.trim();
+   }
+
+   private String toXMLHelper(int depth, String indent) {
+      StringBuilder sb = new StringBuilder();
+
+      // Add opening tag with depth and  name
+      sb.append(indent).append("<L").append(depth).append("> ").append(name);
+
+      // Process the first child with an increased depth and an additional indentation
+      if (firstChild != null) {
+         sb.append("\n").append(firstChild.toXMLHelper(depth + 1, indent + "    "));
+         sb.append(indent);
+      } else {
+         sb.append(" ");
+      }
+
+      // Add closing tag with depth
+      sb.append("</L").append(depth).append(">\n");
+
+      // Process the next sibling with the same depth and indentation
+      if (nextSibling != null) {
+         sb.append(nextSibling.toXMLHelper(depth, indent));
+      }
+
+      return sb.toString();
+   }
+
+
    public static void main (String[] param) {
-      String s = "(B1,C)A";
-      Node t = Node.parsePostfix (s);
-      String v = t.leftParentheticRepresentation();
-      System.out.println (s + " ==> " + v); // (B1,C)A ==> A(B1,C)
+      //example1
+      String s1 = "(B1,C)A";
+      Node t1 = Node.parsePostfix (s1);
+      String v1 = t1.leftParentheticRepresentation();
+      String xml1 =t1.toXML();
+      System.out.println ("case 1:\n" + s1 + " ==> " + v1); // (B1,C)A ==> A(B1,C)
+      System.out.println("\n" + xml1+"\n------");
+      //example2
+      String s2 = "(B1,C,D)A";
+      Node t2 = Node.parsePostfix (s2);
+      String v2 = t2.leftParentheticRepresentation();
+      String xml2=t2.toXML();
+      System.out.println ("case 2:\n" + s2 + " ==> " + v2); // (B1,C,D)A ==> A(B1,C,D)
+      System.out.println("\n" + xml2+"\n------");
+      //example3
+      String s3 = "(((D)C)B)A";
+      Node t3 = Node.parsePostfix (s3);
+      String v3 = t3.leftParentheticRepresentation();
+      String xml3=t3.toXML();
+      System.out.println ("case 3:\n" + s3 + " ==> " + v3); // (((D)C)B)A ==> A(B(C(D)))
+      System.out.println("\n" + xml3+"\n------");
+      //example4
+      String s4 = "((C)B,(E,F)D,G)A";
+      Node t4 = Node.parsePostfix (s4);
+      String v4 = t4.leftParentheticRepresentation();
+      String xml4=t4.toXML();
+      System.out.println ("case 4:\n" + s4 + " ==> " + v4); // ((C)B,(E,F)D,G)A ==> A(B(C),D(E,F),G)
+      System.out.println("\n" + xml4+"\n------");
    }
 }
 
