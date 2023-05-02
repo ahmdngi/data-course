@@ -1,7 +1,5 @@
 import java.util.*;
 
-
-
 //https://www.geeksforgeeks.org/graph-measurements-length-distance-diameter-eccentricity-radius-center/
 /** Container class to different classes, that makes the whole
  * set of classes one class formally.
@@ -57,12 +55,10 @@ public class GraphTask {
 
 
    class Vertex {
-
       private String id;
       private Vertex next;
       private Arc first;
       private int info = 0;
-      // You can add more fields, if needed
 
       Vertex (String s, Vertex v, Arc e) {
          id = s;
@@ -81,12 +77,10 @@ public class GraphTask {
 
    }
 
-
    /** Arc represents one arrow in the graph. Two-directional edges are
     * represented by two Arc objects (for both directions).
     */
    class Arc {
-
       private String id;
       private Vertex target;
       private Arc next;
@@ -261,37 +255,19 @@ public class GraphTask {
       /////////////////////////////////////////////
       //https://github.com/CarterZhou/algorithms_practice/blob/master/algorithms4th/graph/undirected/GraphProperties.java
       //https://github.com/junglie85/sedgewick_algorithms/blob/master/src/main/java/uk/ashleybye/sedgewick/graph/Eccentricity.java
-         public int countVertices() {
+      /**
+       * Counts the number of vertices in the graph.
+       * @return the number of vertices in the graph
+       */
+      public int countVertices() {
             int count = 0;
             Vertex current = first;
             while (current != null) {
                count++;
                current = current.next;
                }
-            //System.out.println (count);
             return count;
             }
-      /**
-       * Find the eccentricity of a given vertex in the graph.
-       * The eccentricity of a vertex is the maximum distance between it and any other vertex in the graph.
-       * Returns -1 if the graph is not connected.
-       * @param v the vertex to find the eccentricity of
-       * @return the eccentricity of the given vertex or -1 if the graph is not connected
-       */
-      public int eccentricity(Vertex v) {
-         int[] distances = distancesFrom(v);
-         int maxDistance = 0;
-         for (int i = 0; i < distances.length; i++) {
-            if (distances[i] == Integer.MAX_VALUE) {
-               return -1; // The graph is not connected
-            }
-            if (distances[i] > maxDistance) {
-               maxDistance = distances[i];
-            }
-         }
-         return maxDistance;
-      }
-
       /**
        * Compute the distances from a given vertex to all other vertices in the graph.
        * @param v the source vertex
@@ -320,6 +296,29 @@ public class GraphTask {
          }
          return distances;
       }
+
+      /**
+       * Find the eccentricity of a given vertex in the graph.
+       * The eccentricity of a vertex is the maximum distance between it and any other vertex in the graph.
+       * Returns -1 if the graph is not connected.
+       * @param v the vertex to find the eccentricity of
+       * @return the eccentricity of the given vertex or -1 if the graph is not connected
+       */
+      public int eccentricity(Vertex v) {
+         int[] distances = distancesFrom(v);
+         int maxDistance = 0;
+         for (int i = 0; i < distances.length; i++) {
+            if (distances[i] == Integer.MAX_VALUE) {
+               return -1; // The graph is not connected
+            }
+            if (distances[i] > maxDistance) {
+               maxDistance = distances[i];
+            }
+         }
+         return maxDistance;
+      }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
       /**
        * Calculate the eccentricity of the graph.
        * The eccentricity of a graph is the maximum eccentricity of its vertices.
@@ -339,6 +338,4 @@ public class GraphTask {
       }
 
    }
-
-} 
-
+}

@@ -1,137 +1,243 @@
 import java.util.*;
-
+/**
+ * Prefix codes and Huffman tree.
+ * Tree depends on source data.
+ */
 public class Huffman {
-   private final Node root;
-   private final Map<Byte, String> codeMap;
-   private int bitLength;
+    Node[] leaves;
+    Node root;
+    byte[] code;
 
-   private static class Node implements Comparable<Node> {
-      Byte value;
-      int frequency;
-      Node left, right;
+    private class Node {
+        byte symbol;
+        Node left;
+        Node right;
+        int frequency;
+        String path;
 
-      Node(Byte value, int frequency) {
-         this.value = value;
-         this.frequency = frequency;
-      }
+        private boolean isLeaf(){
+            return right==null && left==null;}
+    }
+    
+    /** Constructor to build the Huffman code for a given bytearray.
+     * @param original source data
+     */
+    //https://enos.itcollege.ee/~japoia/algorithms/coding.html
+    Huffman (byte[] original) {
+        // initialization of leaves - there are 256 possible bytes
+        leaves = new Node [256];
+        for (int i=0; i<256; i++) {
+            leaves [i] = new Node();
+            leaves [i].left = null;
+            leaves [i].right = null;
+            leaves [i].symbol = (byte)(i-128); // Java specifics - signed bytes
+            leaves [i].frequency = 0;
+        }
+        // calculate frequencies
+        if (original.length == 0) {
+            root = null;
+            return;
+        }
+        for (int i=0; i<original.length; i++) {
+            byte b = original[i];
+            leaves[b + 128].frequency++;
+        }
+        // build the tree
+        LinkedList<Node> roots = new LinkedList<Node>();
+        for (int i=0; i < 256; i++) {
+            if (leaves[i].frequency > 0)
+                roots.add (leaves[i]); // initial fragments
+        } // for i
+        while (roots.size()>1) {
+            Node least1 = removeSmallest (roots);
+            Node least2 = removeSmallest (roots);
+            Node newroot = new Node();
+            newroot.left = least1;
+            newroot.right = least2;
+            newroot.frequency = least1.frequency + least2.frequency;
+            roots.addLast (newroot);
+        }
+        root = (Node)roots.remove (0);
 
-      Node(Node left, Node right) {
-         this.left = left;
-         this.right = right;
-         this.frequency = left.frequency + right.frequency;
-      }
+        visit(root,"");
 
-      boolean isLeaf() {
-         return left == null && right == null;
-      }
+    }
 
-      @Override
-      public int compareTo(Node other) {
-         return Integer.compare(this.frequency, other.frequency);
-      }
-   }
+    //https://www.herongyang.com/Java/Bit-String-Stored-in-Byte-Array-Test-Program.html
+    private static void setBit(byte[] data, int pos, int val) {
+        int posByte = pos/8;
+        int posBit = pos%8;
+        byte oldByte = data[posByte];
+        oldByte = (byte) (((0xFF7F>>posBit) & oldByte) & 0x00FF);
+        byte newByte = (byte) ((val<<(8-(posBit+1))) | oldByte);
+        data[posByte] = newByte;
+    }
 
-   public Huffman(byte[] original) {
-      Map<Byte, Integer> frequencyMap = new HashMap<>();
-      for (byte b : original) {
-         frequencyMap.put(b, frequencyMap.getOrDefault(b, 0) + 1);
-      }
+//https://www.herongyang.com/Java/Bit-String-Get-Bit-from-Byte-Array.html
+    private static int getBit(byte[] data, int pos){
+        int posByte =pos/8;
+        int posBit =pos%8;
+        byte valByte= data[posByte];
+        int valInt= valByte >>(8-(posBit+1)) & 0x0001;
+        return valInt;
+    }
 
-      PriorityQueue<Node> pq = new PriorityQueue<>();
-      for (Map.Entry<Byte, Integer> entry : frequencyMap.entrySet()) {
-         pq.offer(new Node(entry.getKey(), entry.getValue()));
-      }
+    /**
+     * Set the code for every leaf node in the tree
+     * @param n starting node
+     * @param s path to node
+     */
+    private void visit(Node n,String s){
+        if(n.isLeaf()){
+            if(s!="") n.path=s;
+        }
+        else{
+            if(n.left!=null){visit(n.left,s+"0");}
+            if(n.right!=null){visit(n.right,s+"1");}
+        }
+    }
 
-      while (pq.size() > 1) {
-         Node left = pq.poll();
-         Node right = pq.poll();
-         pq.offer(new Node(left, right));
-      }
 
-      root = pq.poll();
-      codeMap = new HashMap<>();
-      generateCodes(root, new StringBuilder());
-   }
+    private String searchByte(byte b, Node n){
+        if(n.isLeaf()&& n.symbol ==b){
+            return n.path;
+        }
+        if(n.left!=null && searchByte(b,n.left)!=null)return searchByte(b,n.left);
+        if(n.right!=null && searchByte(b,n.right)!=null)return searchByte(b,n.right);
+        return null;
+    }
 
-   private void generateCodes(Node node, StringBuilder code) {
-      if (node.isLeaf()) {
-         codeMap.put(node.value, code.toString());
-         bitLength += node.frequency * code.length();
-      } else {
-         generateCodes(node.left, code.append('0'));
-         code.setLength(code.length() - 1);
-         generateCodes(node.right, code.append('1'));
-         code.setLength(code.length() - 1);
-      }
-   }
+    private Node removeSmallest(LinkedList<Node> listNodes){
+        int min =listNodes.get(0).frequency;
+        int index=0;
+        for(int i=1;i<listNodes.size();i++){
+            Node item = listNodes.get(i);
+            if(item.frequency <min){
+                min=item.frequency;
+                index=i;
+            }
+        }
+        return listNodes.remove(index);
+    }
 
-   public int bitLength() {
-      return bitLength;
-   }
+    /** Length of encoded data in bits.
+     * @return number of bits
+     */
+    public int bitLength() {
+        int count=0;
+        int c=0;
+        int nBit=0;
+        int nBitTemp=0;
+        Node n =root;
+        ArrayList<Byte> res = new ArrayList<Byte>();
+        if(!root.isLeaf()){
+            while(c<code.length*8 && count < root.frequency){
 
-   public byte[] encode(byte[] origData) {
-      StringBuilder encodedBits = new StringBuilder();
-      for (byte b : origData) {
-         encodedBits.append(codeMap.get(b));
-      }
+                if(getBit(code,c)==0){
+                    n =n.left;
+                    nBitTemp++;
+                }else{
+                    n=n.right;
+                    nBitTemp++;
+                }
+                if(n.isLeaf()){
+                    res.add(n.symbol);
+                    n=root;
+                    count++;
+                    nBit+=nBitTemp;
+                    nBitTemp=0;
+                }
+                c++;
+            }
+        }
+        else{
+            while (c<code.length*8 && c< root.frequency){
+                res.add(root.symbol);
+                c++;
+                nBit++;
+            }
+        }
+        return nBit;
+    }
+//https://gist.github.com/snarkbait/c939953337ad74d1ab04
+    /** Encoding the byte array using this prefixcode.
+     * @param origData original data
+     * @return encoded data
+     */
+    public byte[] encode (byte [] origData) {
+        String stat="";
+        for (int i=0;i<origData.length;i++){
+            byte b= origData[i];
+            stat= stat+searchByte(b,root);
+        }
+        char[] ch_array=stat.toCharArray();
+        int plus =0;
+        if(ch_array.length%8 !=0){
+            plus=1;
+        }
+        byte[] res  =new byte[ch_array.length/8 +plus];
+        for(int i =0 ; i<ch_array.length;i++){
+            int val=0;
+            if(ch_array[i]=='0') val=0;
+            if(ch_array[i]=='1') val=1;
+            setBit(res,i,val);
 
-      int encodedSize = (encodedBits.length() + 7) / 8;
-      byte[] encodedData = new byte[encodedSize];
+        }
+        code=res;
+        return res;
+    }
 
-      for (int i = 0; i < encodedBits.length(); i++) {
-         if (encodedBits.charAt(i) == '1') {
-            encodedData[i / 8] |= 1 << (7 - (i % 8));
-         }
-      }
+    /** Decoding the byte array using this prefixcode.
+     * @param encodedData encoded data
+     * @return decoded data (hopefully identical to original)
+     */
+    public byte[] decode (byte[] encodedData) {
+        int count = 0;
+        int c = 0;
+        Node n = root;
+        ArrayList<Byte> res = new ArrayList<Byte>();
+        if (!root.isLeaf()) {
+            while (c< encodedData.length*8 && count < root.frequency){
 
-      return encodedData;
-   }
+                if(getBit(encodedData,c)==0){
+                    n=n.left;
+                }else{
+                    n=n.right;
+                }
+                if(n.isLeaf()){
+                    res.add(n.symbol);
+                    n=root;
+                    count++;
+                }
+                c++;
+            }
+        }
+        else//root is leaf
+        {
+            while (c<encodedData.length*8 && c<root.frequency){
+                res.add(root.symbol);
+                c++;
+            }
+        }
+        byte[] res_byte = new byte[res.size()];
+        for(int i=0;i<res.size();i++){
+            res_byte[i]=res.get(i);
+        }
+        return res_byte;
+    }
 
-   public byte[] decode(byte[] encodedData) {
-      List<Byte> decodedData = new ArrayList<>();
-      Node currentNode = root;
+    /** Main method. */
+    public static void main (String[] params) {
+        String tekst = "AAAAAAAAAAAAABBBBBBCCCDDEEF";
+        byte[] orig = tekst.getBytes();
+        Huffman huf = new Huffman (orig);
+        byte[] kood = huf.encode (orig);
+        byte[] orig2 = huf.decode (kood);
+        // must be equal: orig, orig2
+        System.out.println (Arrays.equals (orig, orig2));
+        int lngth = huf.bitLength();
+        System.out.println ("Length of encoded data in bits: " + lngth);
+    }
 
-      for (int i = 0; i < encodedData.length * 8; i++) {
-         int bit = (encodedData[i / 8] >> (7 - (i % 8))) & 1;
-         currentNode = bit == 0 ? currentNode.left : currentNode.right;
-
-         if (currentNode.isLeaf()) {
-            decodedData.add(currentNode.value);
-            currentNode = root;
-         }
-      }
-
-      byte[] result = new byte[decodedData.size()];
-      for (int i = 0; i < result.length; i++) {
-         result[i] = decodedData.get(i);
-      }
-      return result;
-   }
-
-   public static void main(String[] params) {
-      String tekst = "AAAAAAAAAAAAABBBBBBCCCDDEEF";
-      byte[] orig = tekst.getBytes();
-      Huffman huf = new Huffman(orig);
-      byte[] kood = huf.encode(orig);
-      byte[] orig2 = huf.decode(kood);
-
-      System.out.println(Arrays.equals(orig, orig2));
-      int lngth = huf.bitLength();
-      System.out.println("Length of encoded data in bits: " + lngth);
-
-      // Additional test for bytearray of length 1
-      String singleCharText = "A";
-      byte[] singleCharOrig = singleCharText.getBytes();
-      Huffman singleCharHuf = new Huffman(singleCharOrig);
-      byte[] singleCharKood = singleCharHuf.encode(singleCharOrig);
-      byte[] singleCharOrig2 = singleCharHuf.decode(singleCharKood);
-
-      System.out.println(Arrays.equals(singleCharOrig, singleCharOrig2));
-      int singleCharLngth = singleCharHuf.bitLength();
-      System.out.println("Length of encoded data in bits for bytearray of length 1: " + singleCharLngth);
-
-   }
 }
-
-
 
