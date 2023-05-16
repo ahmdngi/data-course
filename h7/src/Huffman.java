@@ -14,7 +14,6 @@ public class Huffman {
         Node right;
         int frequency;
         String path;
-
         private boolean isLeaf(){
             return right==null && left==null;}
     }
@@ -30,6 +29,7 @@ public class Huffman {
             leaves [i] = new Node();
             leaves [i].left = null;
             leaves [i].right = null;
+            //byte type stores values from -128 to 127 but i represent values from 0 to 255
             leaves [i].symbol = (byte)(i-128); // Java specifics - signed bytes
             leaves [i].frequency = 0;
         }
@@ -58,22 +58,35 @@ public class Huffman {
             roots.addLast (newroot);
         }
         root = (Node)roots.remove (0);
-
-        visit(root,"");
-
+        visited(root,"");
     }
 
     //https://www.herongyang.com/Java/Bit-String-Stored-in-Byte-Array-Test-Program.html
+
+    /**
+     Sets the value of the bit at the specified position in the given byte array to the specified value.
+     @param data the byte array to set the bit in.
+     @param pos the position of the bit to set.
+     @param val the value to set the bit to (either 0 or 1).
+     */
     private static void setBit(byte[] data, int pos, int val) {
         int posByte = pos/8;
+        //System.out.println (posByte);
         int posBit = pos%8;
+        //System.out.println ("new"+posBit);
         byte oldByte = data[posByte];
-        oldByte = (byte) (((0xFF7F>>posBit) & oldByte) & 0x00FF);
+        oldByte = (byte) (((0xFF7F>>posBit) & oldByte) & 0x00FF);  // binary: 11111111
         byte newByte = (byte) ((val<<(8-(posBit+1))) | oldByte);
         data[posByte] = newByte;
     }
 
 //https://www.herongyang.com/Java/Bit-String-Get-Bit-from-Byte-Array.html
+    /**
+     Returns the value of the bit at the specified position in the given byte array.
+     @param data the byte array to retrieve the bit from.
+     @param pos the position of the bit to retrieve.
+     @return the value of the bit at the specified position (either 0 or 1).
+     */
     private static int getBit(byte[] data, int pos){
         int posByte =pos/8;
         int posBit =pos%8;
@@ -87,17 +100,22 @@ public class Huffman {
      * @param n starting node
      * @param s path to node
      */
-    private void visit(Node n,String s){
+    private void visited(Node n,String s){
         if(n.isLeaf()){
             if(s!="") n.path=s;
         }
         else{
-            if(n.left!=null){visit(n.left,s+"0");}
-            if(n.right!=null){visit(n.right,s+"1");}
+            if(n.left!=null){visited(n.left,s+"0");}
+            if(n.right!=null){visited(n.right,s+"1");}
         }
     }
 
-
+    /**
+     * This method searches for a byte in a tree of nodes and returns the path to the node where the byte is found.
+     * @param b the byte to be searched for
+     * @param n the root node of the tree being searched
+     * @return the path to the node where the byte is found, or null if the byte is not found
+     */
     private String searchByte(byte b, Node n){
         if(n.isLeaf()&& n.symbol ==b){
             return n.path;
@@ -107,6 +125,12 @@ public class Huffman {
         return null;
     }
 
+    /**
+     * Returns and removes the Node object with the smallest frequency value from the listNodes LinkedList.
+     * @param listNodes a LinkedList of Node objects.
+     * @return the Node object with the smallest frequency value.
+     */
+    //https://stackoverflow.com/questions/16633270/remove-minimum-value-from-linkedlist
     private Node removeSmallest(LinkedList<Node> listNodes){
         int min =listNodes.get(0).frequency;
         int index=0;
@@ -120,20 +144,21 @@ public class Huffman {
         return listNodes.remove(index);
     }
 
-    /** Length of encoded data in bits.
-     * @return number of bits
+    /**
+     Calculates the length of the bit sequence that results from compressing a given byte array.
+     @return the length of the compressed bit sequence in bits.
      */
     public int bitLength() {
-        int count=0;
-        int c=0;
+        int count1=0;
+        int count2=0;
         int nBit=0;
         int nBitTemp=0;
         Node n =root;
         ArrayList<Byte> res = new ArrayList<Byte>();
         if(!root.isLeaf()){
-            while(c<code.length*8 && count < root.frequency){
+            while(count2<code.length*8 && count1 < root.frequency){
 
-                if(getBit(code,c)==0){
+                if(getBit(code,count2)==0){
                     n =n.left;
                     nBitTemp++;
                 }else{
@@ -143,20 +168,21 @@ public class Huffman {
                 if(n.isLeaf()){
                     res.add(n.symbol);
                     n=root;
-                    count++;
+                    count1++;
                     nBit+=nBitTemp;
                     nBitTemp=0;
                 }
-                c++;
+                count2++;
             }
         }
         else{
-            while (c<code.length*8 && c< root.frequency){
+            while (count2<code.length*8 && count2< root.frequency){
                 res.add(root.symbol);
-                c++;
+                count2++;
                 nBit++;
             }
         }
+        //System.out.println (nBit);
         return nBit;
     }
 //https://gist.github.com/snarkbait/c939953337ad74d1ab04
@@ -181,9 +207,9 @@ public class Huffman {
             if(ch_array[i]=='0') val=0;
             if(ch_array[i]=='1') val=1;
             setBit(res,i,val);
-
         }
         code=res;
+        //System.out.println (res.length);
         return res;
     }
 
@@ -192,14 +218,14 @@ public class Huffman {
      * @return decoded data (hopefully identical to original)
      */
     public byte[] decode (byte[] encodedData) {
-        int count = 0;
-        int c = 0;
+        int count1 = 0;
+        int count2 = 0;
         Node n = root;
         ArrayList<Byte> res = new ArrayList<Byte>();
         if (!root.isLeaf()) {
-            while (c< encodedData.length*8 && count < root.frequency){
+            while (count2< encodedData.length*8 && count1 < root.frequency){
 
-                if(getBit(encodedData,c)==0){
+                if(getBit(encodedData,count2)==0){
                     n=n.left;
                 }else{
                     n=n.right;
@@ -207,16 +233,16 @@ public class Huffman {
                 if(n.isLeaf()){
                     res.add(n.symbol);
                     n=root;
-                    count++;
+                    count1++;
                 }
-                c++;
+                count2++;
             }
         }
-        else//root is leaf
+        else
         {
-            while (c<encodedData.length*8 && c<root.frequency){
+            while (count2<encodedData.length*8 && count2<root.frequency){
                 res.add(root.symbol);
-                c++;
+                count2++;
             }
         }
         byte[] res_byte = new byte[res.size()];
@@ -228,10 +254,12 @@ public class Huffman {
 
     /** Main method. */
     public static void main (String[] params) {
-        String tekst = "AAAAAAAAAAAAABBBBBBCCCDDEEF";
+        //String tekst = "AAAAAAAAAAAAABBBBBBCCCDDEEF";
+        String tekst = "AAAABBBCC";
         byte[] orig = tekst.getBytes();
         Huffman huf = new Huffman (orig);
         byte[] kood = huf.encode (orig);
+        //System.out.println (kood);
         byte[] orig2 = huf.decode (kood);
         // must be equal: orig, orig2
         System.out.println (Arrays.equals (orig, orig2));
